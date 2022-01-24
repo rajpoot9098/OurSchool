@@ -1,0 +1,146 @@
+﻿@model OurSchool.Models.ExamPaperViewModel
+@{
+    ViewBag.Title = "StudentExamPaper";
+}
+
+@*<h2>StudentExamPaper</h2>*@
+
+<div class="panel panel-body">
+    <div class="col-md-12">
+
+        <form id="myForm">
+            @Html.AntiForgeryToken()
+            <h4>Create a Queation Paper.</h4>
+            <hr />
+            @Html.ValidationSummary()
+
+            @Html.HiddenFor(m => m.QueId, new { @id = "hdQueId" })
+            <div class="row form-group">
+                <div class="col-md-1">
+                    @Html.LabelFor(m=>m.SubjectName,"Subject",new { @id="lblSubject"})
+                </div>
+                <div class="col-md-4">
+                    @Html.DropDownListFor(model => model.SubjectId, ViewBag.SubjectList as SelectList, "--Select Subject--", new { @class = "form-control", @id = "CboSubject" })
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-md-1">
+                    @Html.LabelFor(m => m.QueNo, "Question", new { @id = "lblQuestion" })
+                </div>
+                <div class="col-md-11">
+                    @Html.LabelFor(m => m.QueDesc, "Question Description", new { @id = "lblQuestion" })
+                    @*@Html.TextAreaFor(m => m.QueDesc, new { @id = "txtQueDesc", @class = "form-control", style = "max-width:85%", @maxlength = "1000", @placeholder = "Question Here", autocomplete = "off" })*@
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-md-1">
+                    @Html.Label("A")
+                    <input class="radio-info" type="radio" checked="checked" name="All" value="A" />
+                </div>
+                <div class="col-md-4">
+                    @Html.LabelFor(m => m.AOptionDesc, "A Option Desc", new { @id = "lblAOptionDesc" })
+                </div>
+                <div class="col-md-1">
+                    @Html.Label("B")
+                    <input class="radio-info" type="radio" name="All" value="B" />
+                </div>
+                <div class="col-md-4">
+                    @Html.LabelFor(m => m.BOptionDesc, "B Option Desc", new { @id = "lblBOptionDesc" })
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-md-1">
+                    @Html.Label("C")
+                    <input class="radio-info" type="radio" name="All" value="C" />
+                </div>
+                <div class="col-md-4">
+                    @Html.LabelFor(m => m.COptionDesc, "C Option Desc", new { @id = "lblCOptionDesc" })
+                </div>
+                <div class="col-md-1">
+                    @Html.Label("D")
+                    <input class="radio-info" type="radio" name="All" value="D" />
+                </div>
+                <div class="col-md-4">
+                    @Html.LabelFor(m => m.DOptionDesc, "D Option Desc", new { @id = "lblDOptionDesc" })
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <div class="col-md-12">
+
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-1" id="divSave">
+                    <a href="#" class="btn btn-primary" onclick="RegisterUser()">Mark</a>
+                </div>
+                <div class="col-md-1" id="divUpdate">
+                    <a href="#" class="btn btn-success" onclick="RegisterUser()">Submit</a>
+                </div>
+                <div class="col-md-1">
+                    <a href="#" class="btn btn-danger" onclick="fnClear()">Next</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script>
+
+    $(function () {
+        $('select[id$=CboSubject]').bind("change keyup", function () {
+            var ddlSubject = $("[id*=CboSubject]");
+            var SubjectText = ddlSubject.find("option:selected").text();
+            var SubjectValue = ddlSubject.val();
+
+            if (isNaN(SubjectValue) || SubjectValue == 0) {
+                return false;
+            }
+            else {
+                var object1 = {
+                    SubjectId:SubjectValue,
+                    SubjectName:SubjectText
+                };
+            console.log(JSON.stringify(object1));
+
+                $.ajax({
+                    url: '@Url.Action("GetQuestion", "StudentExam")',
+                    type: 'POST',
+                    dataType: "JSON",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(object1),
+                    success: function (data) {
+
+                        alert(data.QueId);
+                        alert(data.QueNo);
+
+                        //let JsonObject = JSON.parse(response);
+                        //alert(response);
+
+                        @*if (response == "Success") {
+                            window.location.href = '@Url.Action("Index", "QuePaperMaster")';
+                            $("#CboSubject").focus();
+                        }
+                        else {
+                            swal({
+                                title: "Alert!",
+                                text: "Record is not Save",
+                                type: 'error',
+                                allowOutsideClick: false
+                            });
+                            return false;
+                        }*@
+                    }
+                });
+            }
+
+
+        });
+    });
+
+</script>

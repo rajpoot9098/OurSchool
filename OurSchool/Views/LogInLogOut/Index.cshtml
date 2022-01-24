@@ -1,0 +1,141 @@
+﻿@model OurSchool.Models.LoginViewModel
+
+@{
+    Layout = null;
+    ViewBag.Title = "Log in";
+}
+
+@Styles.Render("~/Content/css")
+@Scripts.Render("~/bundles/modernizr")
+
+<script src="~/Scripts/jquery-2.1.4.min.js"></script>
+<link href="~/Content/jquery-ui.theme.min.css" rel="stylesheet" />
+<link href="~/Content/jquery-ui.min.css" rel="stylesheet" />
+<script src="~/Scripts/jquery-ui.min.js"></script>
+<link href="~/Content/assets/sweetalert/sweetalert.css" rel="stylesheet" />
+
+<link href="~/Content/DataTable/css/jquery.dataTables.css" rel="stylesheet" />
+<script src="~/Scripts/DataTable/jquery.dataTables.js"></script>
+<script src="~/Content/assets/sweetalert/sweetalert.min.js"></script>
+
+<style>
+    .form-control {
+        max-width: 100%;
+    }
+</style>
+@*<h2>@ViewBag.Title.</h2>*@
+<div class="row">
+    <div class="col-md-3 col-md-offset-5">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h4>Login</h4>
+            </div>
+            <div class="panel-body">
+                <section id="loginForm">
+                    @using (Html.BeginForm("Index", "LogInLogOut", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { role = "form" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true)
+                        <div class="form-group row">
+                            @Html.LabelFor(m => m.UserName, new { @class = "col-md-12 control-label" })
+                            <div class="col-md-12">
+                                @Html.TextBoxFor(m => m.UserName, new { id = "txtUserName", @class = "form-control", @placeholder = "User Name" })
+                                @Html.ValidationMessageFor(m => m.UserName)
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            @Html.LabelFor(m => m.Password, new { @class = "col-md-12 control-label" })
+                            <div class="col-md-12">
+                                @Html.PasswordFor(m => m.Password, new { id = "txtPassword", @class = "form-control", @placeholder = "Password" })
+                                @Html.ValidationMessageFor(m => m.Password)
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-6">
+                                <div class="checkbox">
+                                    @Html.CheckBoxFor(m => m.RememberMe)
+                                    @Html.LabelFor(m => m.RememberMe)
+                                </div>
+                            </div>
+                            <div class="col-md-6 text-right">
+                                @*<input type="submit" value="Log in" class="btn btn-success" />*@
+                                <a href="#" class="btn btn-success" onclick="RegisterUser()">Log in</a>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <p>
+                                    @Html.ActionLink("Registration", "Index", "UserRegistration") if you don't have a local account.
+                                </p>
+                            </div>
+                        </div>
+                    }
+                </section>
+
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+<script>
+    var RegisterUser = function () {
+
+        var UserName = $('#txtUserName').val();
+        var Password = $('#txtPassword').val();
+
+        if (UserName == '') {
+            swal({
+                title: "Validation Error",
+                text: "User Name is a mandatory field.",
+                type: 'error',
+                allowOutsideClick: false
+            });
+
+            return false;
+        }
+
+        if (Password == '') {
+            swal({
+                title: "Validation Error",
+                text: "Password is a mandatory field.",
+                type: 'error',
+                allowOutsideClick: false
+            });
+
+            return false;
+        }
+
+        var object1 = {
+            UserName: UserName,
+            Password: Password
+        };
+
+        console.log(JSON.stringify(object1));
+
+        $.ajax({
+            url: '@Url.Action("UserLogin", "LogInLogOut")',
+            type: 'POST',
+            dataType: "JSON",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(object1),
+            success: function (response) {
+                if (response == "Success") {
+                    window.location.href = '@Url.Action("Index", "QuePaperMaster")';
+                    $("#CboSubject").focus();
+                }
+                else {
+                    swal({
+                        title: "Alert!",
+                        text: "Invalid user name or password.",
+                        type: 'error',
+                        allowOutsideClick: false
+                    });
+                    return false;
+                }
+            }
+        });
+    }
+</script>

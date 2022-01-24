@@ -1,0 +1,339 @@
+﻿@model OurSchool.Models.QuestionPaperViewModel
+@{
+    ViewBag.Title = "Question Paper";
+}
+
+<div class="panel panel-body">
+    <div class="col-md-12">
+
+        <form id="myForm">
+            @Html.AntiForgeryToken()
+            <h4>Create a Queation Paper.</h4>
+            <hr />
+            @Html.ValidationSummary()
+
+            @Html.HiddenFor(m => m.QueId, new { @id = "hdQueId" })
+            <div class="row form-group">
+                <div class="col-md-1">
+                    @Html.Label("Subject")
+                </div>
+                <div class="col-md-4">
+                    @Html.DropDownListFor(model => model.SubjectId, ViewBag.SubjectList as SelectList, "--Select Subject--", new { @class = "form-control", @id = "CboSubject" })
+                </div>
+                <div class="col-md-2">
+                    @Html.Label("Option Type")
+                </div>
+                <div class="col-md-4">
+                    @Html.DropDownListFor(model => model.OptionTypeId, ViewBag.OptionTypeList as SelectList, "--Select Option Type--", new { @class = "form-control", @id = "CboOptionType" })
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-md-1">
+                    @Html.Label("Question")
+                </div>
+                <div class="col-md-11">
+                    @Html.TextAreaFor(m => m.QueDesc, new { @id = "txtQueDesc", @class = "form-control", style = "max-width:85%", @maxlength = "1000", @placeholder = "Question Here", autocomplete = "off" })
+
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-md-1">
+                    @Html.Label("A")
+                </div>
+                <div class="col-md-4">
+                    <input id="txtOptionA" name="" type="text" value="" class="form-control" />
+                </div>
+                <div class="col-md-1">
+                    @Html.Label("B")
+                </div>
+                <div class="col-md-4">
+                    <input id="txtOptionB" name="" type="text" value="" class="form-control" />
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-md-1">
+                    @Html.Label("C")
+                </div>
+                <div class="col-md-4">
+                    <input id="txtOptionC" name="" type="text" value="" class="form-control" />
+                </div>
+                <div class="col-md-1">
+                    @Html.Label("D")
+                </div>
+                <div class="col-md-4">
+                    <input id="txtOptionD" name="" type="text" value="" class="form-control" />
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <div class="col-md-12">
+
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-1" id="divSave">
+                    <a href="#" class="btn btn-primary" onclick="RegisterUser()">SAVE</a>
+                </div>
+                <div class="col-md-1" id="divUpdate">
+                    <a href="#" class="btn btn-success" onclick="RegisterUser()">UPDATE</a>
+                </div>
+                <div class="col-md-1">
+                    <a href="#" class="btn btn-danger" onclick="fnClear()">CLEAR</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <div class="col-md-8">
+        <div class="dt-responsive table-responsive">
+            <table id="simpletable" class="table table-striped table-bordered nowrap MyDataTable dataTable" role="grid" aria-describedby="simpletable_info">
+                <thead>
+                    <tr>
+                        <th style="display:none;">QueId</th>
+                        <th>Subject Name</th>
+                        <th style="display:none;">SubjectId</th>
+                        <th>Option Type</th>
+                        <th style="display:none;">OptionTypeId</th>
+                        <th>Que No</th>
+                        <th>Que</th>
+                        <th>A</th>
+                        <th>B</th>
+                        <th>C</th>
+                        <th>D</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var PaperDataTable in ViewBag.PaperDataTable)
+                    {
+                        <tr>
+                            <td style="display:none;">@PaperDataTable.QueId</td>
+                            <td>@PaperDataTable.SubjectName</td>
+                            <td style="display:none;">@PaperDataTable.SubjectId</td>
+                            <td>@PaperDataTable.OptionTypeDesc</td>
+                            <td style="display:none;">@PaperDataTable.OptionTypeId</td>
+                            <td>@PaperDataTable.QueNo</td>
+                            <td>@PaperDataTable.QueDesc</td>
+                            <td>@PaperDataTable.AOptionDesc</td>
+                            <td>@PaperDataTable.BOptionDesc</td>
+                            <td>@PaperDataTable.COptionDesc</td>
+                            <td>@PaperDataTable.DOptionDesc</td>
+                            <td>
+                                @if (PaperDataTable.QueId > 0)
+                                {
+                                    @*<a href="@Url.Action("POSEditInfoForm", "POSInfoManage", new { QueId = PaperDataTable.QueId })" class="btn btn-info btn-sm">Edit </a>*@
+                                    <a href="#" onclick="AddEditEmployee(this)" class="btn btn-info btn-sm">Edit</a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        $(".MyDataTable").DataTable();
+        $("#divUpdate").hide();
+        $("#divSave").show();
+    });
+
+    var RegisterUser = function () {
+        var hdQueId = $('#hdQueId').val();
+        var QueId = hdQueId == '' ? 0 : hdQueId;
+        var SubjectId = $('#CboSubject option:selected').val();
+        var SubjectName = $('#CboSubject option:selected').text();
+
+        var OptionTypeId = $('#CboOptionType option:selected').val();
+        var OptionTypeName = $('#CboOptionType option:selected').text();
+
+        var QueDesc = $('#txtQueDesc').val();
+        var OptionA = $('#txtOptionA').val();
+        var OptionB = $('#txtOptionB').val();
+        var OptionC = $('#txtOptionC').val();
+        var OptionD = $('#txtOptionD').val();
+
+        if (isNaN(SubjectId) || SubjectId == 0) {
+            swal({
+                title: "Validation Error",
+                text: "Please Select Subject.",
+                type: 'error',
+                allowOutsideClick: false
+            });
+
+            return false;
+        }
+
+
+        if (isNaN(OptionTypeId) || OptionTypeId == 0) {
+            swal({
+                title: "Validation Error",
+                text: "Please Select Option Type.",
+                type: 'error',
+                allowOutsideClick: false
+            });
+            return false;
+        }
+        debugger
+        if (QueDesc == '') {
+            swal({
+                title: "Validation Error",
+                text: "Question is a mandatory field.",
+                type: 'error',
+                allowOutsideClick: false
+            });
+
+            return false;
+        }
+
+        if (OptionA == '') {
+            swal({
+                title: "Validation Error",
+                text: "Option A is a mandatory field.",
+                type: 'error',
+                allowOutsideClick: false
+            });
+
+            return false;
+        }
+
+        if (OptionB == '') {
+            swal({
+                title: "Validation Error",
+                text: "Option B is a mandatory field.",
+                type: 'error',
+                allowOutsideClick: false
+            });
+
+            return false;
+        }
+
+        if (OptionC == '') {
+            swal({
+                title: "Validation Error",
+                text: "Option C is a mandatory field.",
+                type: 'error',
+                allowOutsideClick: false
+            });
+
+            return false;
+        }
+
+        if (OptionD == '') {
+            swal({
+                title: "Validation Error",
+                text: "Option D is a mandatory field.",
+                type: 'error',
+                allowOutsideClick: false
+            });
+
+            return false;
+        }
+
+        var object1 = {
+            QueId: QueId,
+            QueNo: 0,
+            QueDesc: QueDesc,
+            SubjectId: SubjectId,
+            SubjectName: SubjectName,
+            OptionTypeId: OptionTypeId,
+            OptionTypeDesc: OptionTypeName,
+            lstOptionViewModel: [
+                {
+                    OptionId: 0,
+                    QueId: 0,
+                    OptionCode: "A",
+                    OptionDesc: OptionA
+                },
+
+                {
+                    OptionId: 0,
+                    QueId: 0,
+                    OptionCode: "B",
+                    OptionDesc: OptionB
+                },
+
+                {
+                    OptionId: 0,
+                    QueId: 0,
+                    OptionCode: "C",
+                    OptionDesc: OptionC
+                },
+
+                {
+                    OptionId: 0,
+                    QueId: 0,
+                    OptionCode: "D",
+                    OptionDesc: OptionD
+                }
+            ]
+        };
+
+        console.log(JSON.stringify(object1));
+
+        $.ajax({
+            url: '@Url.Action("SaveQuestion", "QuePaperMaster")',
+            type: 'POST',
+            dataType: "JSON",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(object1),
+            success: function (response) {
+                if (response == "Success") {
+                    window.location.href = '@Url.Action("Index", "QuePaperMaster")';
+                    $("#CboSubject").focus();
+                }
+                else {
+                    swal({
+                        title: "Alert!",
+                        text: "Record is not Save",
+                        type: 'error',
+                        allowOutsideClick: false
+                    });
+                    return false;
+                }
+            }
+        });
+    }
+
+    var AddEditEmployee = function (ctl) {
+
+        _row = $(ctl).parents("tr");
+        var cols = _row.children("td");
+
+        $("#hdQueId").val($(cols[0]).text());
+        $("#CboSubject").val($(cols[2]).text());
+        $("#CboOptionType").val($(cols[4]).text());
+        $("#txtQueDesc").val($(cols[6]).text());
+        $("#txtOptionA").val($(cols[7]).text());
+        $("#txtOptionB").val($(cols[8]).text());
+        $("#txtOptionC").val($(cols[9]).text());
+        $("#txtOptionD").val($(cols[10]).text());
+
+        $("#divUpdate").show();
+        $("#divSave").hide();
+    }
+
+    function fnClear() {
+        $("#hdQueId").val('');
+        $("#CboSubject").val('');
+        $("#CboOptionType").val('');
+        $("#txtQueDesc").val('');
+        $("#txtOptionA").val('');
+        $("#txtOptionB").val('');
+        $("#txtOptionC").val('');
+        $("#txtOptionD").val('');
+
+        $("#divUpdate").hide();
+        $("#divSave").show();
+    }
+
+</script>

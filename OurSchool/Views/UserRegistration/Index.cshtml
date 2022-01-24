@@ -1,0 +1,185 @@
+﻿@model OurSchool.Models.RegistrationModel.RegisterViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>@*Registration*@</h2>
+
+<div class="panel panel-body">
+    <div class="col-md-4">
+
+        <form id="myForm">
+            @Html.AntiForgeryToken()
+            <h4>Create a new account.</h4>
+            <hr />
+            @Html.ValidationSummary()
+            <div class="form-group">
+                <div class="col-md-12">
+                    @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", @placeholder = "User Name" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-12">
+                    @Html.DropDownListFor(model => model.DepartmentId, ViewBag.DepartmentList as SelectList, "--Select Department--", new { @class = "form-control" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-12">
+                    @Html.TextBoxFor(m => m.ContectNo, new { @class = "form-control numberonly", @type = "text", maxlength = 10, @placeholder = "Contact Number", @required="required" , @pattern= "" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-12">
+                    @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = "Password" })
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-12">
+                    @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", @placeholder = "Confirm Password" })
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-12">
+                    <a href="#" class="btn btn-primary " onclick="RegisterUser()">Submit</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <div class="col-md-8">
+        <div class="dt-responsive table-responsive">
+            <table id="simpletable" class="table table-striped table-bordered nowrap MyDataTable dataTable" role="grid" aria-describedby="simpletable_info">
+                <thead>
+                    <tr>
+                        <th>SRNO</th>
+                        <th>User Code</th>
+                        <th>User Name</th>
+                        <th>Department</th>
+                        <th>Contact</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var RegisterDataModel in ViewBag.RegisterDataModel)
+                    {
+                        <tr>
+                            <td>@RegisterDataModel.SRNO</td>
+                            <td>@RegisterDataModel.UserCode</td>
+                            <td>@RegisterDataModel.UserName</td>
+                            <td>@RegisterDataModel.DepartmentName</td>
+                            <td>@RegisterDataModel.ContectNo</td>
+                            <td>
+                                @if (RegisterDataModel.RecordNo > 0)
+                                {
+                                    <a href="@Url.Action("POSEditInfoForm", "POSInfoManage", new { RecordNo = RegisterDataModel.RecordNo })" class="btn btn-info btn-sm">Edit </a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        $(".MyDataTable").DataTable();
+
+        /// For Create Popover \\\
+        function PopOverError(id, plac, msg) {
+            try {
+                $(id).popover({
+                    title: 'Error!',
+                    trigger: 'manual',
+                    placement: plac,
+                    content: function () {
+                        var message = msg; //"Allow Numbers Only!";
+                        return message;
+                    }
+                });
+                $(id).popover("show");
+            } catch (e) { }
+        }
+    // For 10 Digit Code 
+        $('.Mobile').blur(function (e) {
+            try {
+                var id = ('#' + this.id);
+                var mobile = $(id).val();
+                $(id).popover('destroy');
+                var valid = true;
+                if (mobile == undefined || mobile == '') {
+                    return false;
+                }
+
+
+                if (mobile.length == 10) {
+                    valid = true;
+                } else {
+                    valid = false;
+                }
+
+                if (valid) {
+                    $(id).popover('destroy');
+
+                } else {
+                    $(id).focus();
+                    PopOverError(id, 'top', 'Enter 10 Digit Mobile No.');
+                    e.preventDefault();
+                    //return false;
+                }
+            } catch (e) { }
+        });
+
+        //// For Numeri Value Only \\\\\\
+        $('.numberonly').keypress(function (event) {
+
+            try {
+                var chCode = (event.charCode === undefined) ? event.keyCode : event.charCode;
+                var id = ('#' + this.id);
+                if (chCode > 31 && (chCode < 48 || chCode > 57)) {
+                    PopOverError(id, 'top', 'Allow Numbers Only!');
+                    return false;
+                }
+                else {
+                    $(id).popover('destroy');
+                    return true;
+                }
+            } catch (e) {
+
+            }
+        });
+
+        $('.numberonly').blur(function (e) {
+            try {
+                var id = ('#' + this.id);
+                $(id).popover('destroy');
+            } catch (e) { }
+        });
+    });
+
+    var RegisterUser = function () {
+        var data = $("#myForm").serialize();
+
+        $.ajax({
+            type: "Post",
+            url: "/UserRegistration/RegisterUser",
+            data: data,
+            success: function (response) {
+                if (response == "Success") {
+                    var url = '@Url.Action("Index", "UserRegistration")';
+                    window.location.href = url;
+                }
+                else {
+                    alert("hello");
+                }
+            }
+        })
+    }
+</script>

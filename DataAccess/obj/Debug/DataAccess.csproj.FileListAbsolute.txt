@@ -1,0 +1,7 @@
+E:\Bhagwan Work\RND\OurSchool\DataAccess\bin\Debug\DataAccess.dll
+E:\Bhagwan Work\RND\OurSchool\DataAccess\bin\Debug\DataAccess.pdb
+E:\Bhagwan Work\RND\OurSchool\DataAccess\obj\Debug\DataAccess.csproj.CoreCompileInputs.cache
+E:\Bhagwan Work\RND\OurSchool\DataAccess\obj\Debug\DataAccess.csproj.CopyComplete
+E:\Bhagwan Work\RND\OurSchool\DataAccess\obj\Debug\DataAccess.dll
+E:\Bhagwan Work\RND\OurSchool\DataAccess\obj\Debug\DataAccess.pdb
+E:\Bhagwan Work\RND\OurSchool\DataAccess\obj\Debug\DataAccess.csproj.AssemblyReference.cache
